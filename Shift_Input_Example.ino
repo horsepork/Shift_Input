@@ -20,10 +20,10 @@ void loop(){
     shiftInputs.update();
 
     // returns state of third pin on the second shift register
-    shiftInputs.digitalRead(10); // passed value can't be equal to or greater than NUM_INPUTS
+    shiftInputs.read(10); // passed value can't be equal to or greater than NUM_INPUTS
 
     // returns state of a pin of a given shift register
-    shiftInputs.digitalRead(1, 0); // (pass shift register index first) returns state of first pin of the second shift register
+    shiftInputs.read(1, 0); // (pass shift register index first) returns state of first pin of the second shift register
                                    // first parameter can't exceed numShiftRegisters-1, second can't exceed 7
                                    
     // returns a byte with the state of all 8 pins on a given shift register

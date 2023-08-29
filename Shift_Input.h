@@ -1,3 +1,6 @@
+#ifndef SHIFT_INPUT_H
+#define SHIFT_INPUT_H
+
 #include "Arduino.h"
 
 class Shift_Input{
@@ -88,7 +91,7 @@ class Shift_Input{
             return debouncedInput[shiftRegisterIndex];
         }
 
-        bool digitalRead(uint16_t index){
+        bool read(uint16_t index){
             if(index >= numInputs){
                 if(debug){
                     Serial.print(index);
@@ -96,10 +99,10 @@ class Shift_Input{
                 }
                 return false;
             }
-            return digitalRead(index / 8, index % 8);
+            return read(index / 8, index % 8);
         }
 
-        bool digitalRead(uint8_t shiftRegisterIndex, uint8_t pinIndex){
+        bool read(uint8_t shiftRegisterIndex, uint8_t pinIndex){
             if(shiftRegisterIndex >= numShiftRegisters){
                 
                 return false;
@@ -133,3 +136,5 @@ class Shift_Input{
             Serial.println(debounceTime);
         }
 };
+
+#endif
