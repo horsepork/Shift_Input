@@ -2,6 +2,7 @@
 #define SHIFT_INPUT_H
 
 #include "Arduino.h"
+#include "BooleanInputBase.h"
 
 class Shift_Input{
     public:
@@ -14,8 +15,11 @@ class Shift_Input{
             rawInput = new uint8_t[numShiftRegisters];
             prevInput = new uint8_t[numShiftRegisters];
             debouncedInput = new uint8_t[numShiftRegisters];
-            debounceTimer = new unsigned long[numShiftRegisters];
+            processedInput = new uint8_t[numShiftRegisters];
+            debounceTimer = new uint32_t[numShiftRegisters];
+            booleanBaseObject = new BooleanInputBase[numInputs];
         }
+        BooleanInputBase *booleanBaseObject;
     
     private:
         uint8_t loadPin;
@@ -29,6 +33,7 @@ class Shift_Input{
         uint8_t *rawInput;
         uint8_t *prevInput;
         uint8_t *debouncedInput;
+        uint8_t *processedInput; // changes bit states according to input type
         uint32_t *debounceTimer;
         bool debug = false;
         bool updated = false;
@@ -50,19 +55,30 @@ class Shift_Input{
             digitalWrite(clockPin, HIGH);
             delayMicroseconds(5);
             digitalWrite(loadPin, HIGH);
-            for(int i = 0; i < numShiftRegisters; i++){
-                rawInput[i] = shiftIn(dataPin, clockPin, LSBFIRST);
-                if(rawInput[i] = debouncedInput[i]){
-                    prevInput[i] = rawInput[i];
+            for(int shiftRegIndex = 0; shiftRegIndex < numShiftRegisters; shiftRegIndex++){
+                rawInput[shiftRegIndex] = shiftIn(dataPin, clockPin, LSBFIRST);
+                if(rawInput[shiftRegIndex] = debouncedInput[shiftRegIndex]){
+                    prevInput[shiftRegIndex] = rawInput[shiftRegIndex];
                     continue;
                 }
-                if(prevInput[i] != rawInput[i]){
-                    prevInput[i] = rawInput[i];
-                    debounceTimer[i] = millis();
+                if(prevInput[shiftRegIndex] != rawInput[shiftRegIndex]){
+                    prevInput[shiftRegIndex] = rawInput[shiftRegIndex];
+                    debounceTimer[shiftRegIndex] = millis();
                 }
-                else if(millis() - debounceTimer[i] > debounceTime){
-                    debouncedInput[i] = rawInput[i];
-                    updated = true; // flag only reset by getAllInputs
+                else if(millis() - debounceTimer[shiftRegIndex] > debounceTime){
+                    debouncedInput[shiftRegIndex] = rawInput[shiftRegIndex];
+                    processedInput[shiftRegIndex] = 0;
+                    for(int bitIndex = 0; bitIndex < 8; bitIndex++){
+                        uint8_t booleanBaseObjectIndex = bitIndex + shiftRegIndex * 8;
+                        if(booleanBaseObjectIndex >= numInputs){
+                            break;
+                        }
+                        booleanBaseObject[booleanBaseObjectIndex].setState(bitRead(debouncedInput[shiftRegIndex], bitIndex));
+                        if(booleanBaseObject[booleanBaseObjectIndex].read()){
+                            processedInput[shiftRegIndex] += power(2, bitIndex);
+                        }
+                    }
+                    updated = true; // flag only reset by getAllInputs or resetUpdateFlag
                 }
             }
         }
@@ -71,9 +87,13 @@ class Shift_Input{
             return updated;
         }
 
+        void resetUpdateFlag(){
+            updated = false;
+        }
+
         uint8_t* getAllInputs(){
             updated = false;
-            return debouncedInput;
+            return processedInput;
         }
 
         uint8_t getNumShiftRegisters(){
@@ -88,7 +108,7 @@ class Shift_Input{
                 }
                 return 0;
             }
-            return debouncedInput[shiftRegisterIndex];
+            return processedInput[shiftRegisterIndex];
         }
 
         bool read(uint16_t index){
@@ -99,7 +119,7 @@ class Shift_Input{
                 }
                 return false;
             }
-            return read(index / 8, index % 8);
+            return booleanBaseObject[index].read();
         }
 
         bool read(uint8_t shiftRegisterIndex, uint8_t pinIndex){
@@ -113,7 +133,7 @@ class Shift_Input{
                 }
                 return false;
             }
-            return bitRead(debouncedInput[shiftRegisterIndex], pinIndex);
+            return booleanBaseObject[shiftRegisterIndex * 8 + pinIndex].read();
         }
 
         void setDebugMode(bool d){
@@ -134,6 +154,14 @@ class Shift_Input{
             if(!debug) return;
             Serial.print("debounce time -- ");
             Serial.println(debounceTime);
+        }
+
+        uint16_t power(uint8_t base, uint8_t exponent){
+            uint16_t returnVal = 1;
+            for(int i = 0; i < exponent; i++){
+                returnVal *= base;
+            }
+            return returnVal;
         }
 };
 
