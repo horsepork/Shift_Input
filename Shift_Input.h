@@ -78,8 +78,12 @@ class Shift_Input{
                             processedInput[shiftRegIndex] += power(2, bitIndex);
                         }
                     }
-                    updated = true; // flag only reset by getAllInputs or resetUpdateFlag
+                    updated = true;
                 }
+            }
+            if(updated){
+                updated = false;
+                return true;
             }
             return updated;
         }
@@ -93,7 +97,6 @@ class Shift_Input{
         }
 
         uint8_t* getAllInputs(){
-            updated = false;
             return processedInput;
         }
 

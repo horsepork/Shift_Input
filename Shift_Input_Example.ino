@@ -30,7 +30,7 @@ void loop(){
     // 1st, 2nd, and 6th pins high would result in 00100011
     shiftInputs.readShiftRegister(0); // 0 corresponds to first shift register in chain
     
-    if(shiftInputs.checkIfUpdated()){ // updated flag is only reset to false by getAllInputs
+    if(shiftInputs.update()){ // updated flag is only reset to false by getAllInputs 
         uint8_t *buf = shiftInputs.getAllInputs(); // buf is an array with the state of all inputs, with each member of the array
                                                    // corresponding to the state of a given shift register. 11 inputs would mean
                                                    // this array would have a size of 2, in this instance
