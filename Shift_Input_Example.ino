@@ -16,7 +16,7 @@ void setup(){
 }
 
 void loop(){
-    // call every loop
+    // call every loop, returns true if updated
     shiftInputs.update();
 
     // returns state of third pin on the second shift register

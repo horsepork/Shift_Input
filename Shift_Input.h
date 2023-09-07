@@ -47,8 +47,8 @@ class Shift_Input{
             timer = millis();
         }
 
-        void update(){
-            if(millis() - timer < updateDelay) return;
+        bool update(){
+            if(millis() - timer < updateDelay) return updated;
             timer = millis();
 
             digitalWrite(loadPin, LOW);
@@ -81,14 +81,15 @@ class Shift_Input{
                     updated = true; // flag only reset by getAllInputs or resetUpdateFlag
                 }
             }
-        }
-
-        bool checkIfUpdated(){
             return updated;
         }
 
         void resetUpdateFlag(){
             updated = false;
+        }
+
+        uint8_t* read(){
+            return getAllInputs();
         }
 
         uint8_t* getAllInputs(){
