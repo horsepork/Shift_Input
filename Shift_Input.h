@@ -81,9 +81,6 @@ class Shift_Input{
                     }
                     
                     updated = true;
-                    Serial.print(shiftRegIndex);
-                    Serial.print(" -- ");
-                    Serial.println(processedInput[shiftRegIndex], BIN);
                 }
             }
             if(updated){
