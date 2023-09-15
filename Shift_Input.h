@@ -67,7 +67,9 @@ class Shift_Input{
                 }
                 else if(millis() - debounceTimer[shiftRegIndex] > debounceTime){
                     debouncedInput[shiftRegIndex] = rawInput[shiftRegIndex];
-                    
+                    Serial.print(shiftRegIndex);
+                    Serial.print(" -- ");
+                    Serial.println(rawInput[shiftRegIndex], BIN);
                     processedInput[shiftRegIndex] = 0;
                     for(int bitIndex = 0; bitIndex < 8; bitIndex++){
                         uint8_t booleanBaseObjectIndex = bitIndex + shiftRegIndex * 8;
@@ -79,9 +81,7 @@ class Shift_Input{
                             processedInput[shiftRegIndex] += power(2, bitIndex);
                         }
                     }
-                    Serial.print(shiftRegIndex);
-                    Serial.print(" -- ");
-                    Serial.println(processedInput[shiftRegIndex], BIN);
+                    
                     updated = true;
                 }
             }
