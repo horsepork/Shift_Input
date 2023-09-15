@@ -48,7 +48,7 @@ class Shift_Input{
         }
 
         bool update(){
-            if(millis() - timer < updateDelay) return updated;
+            if(millis() - timer < updateDelay) return false;
             timer = millis();
 
             digitalWrite(loadPin, LOW);
@@ -88,7 +88,7 @@ class Shift_Input{
                 updated = false;
                 return true;
             }
-            return updated;
+            return false;
         }
 
         void resetUpdateFlag(){
