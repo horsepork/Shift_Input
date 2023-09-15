@@ -56,7 +56,7 @@ class Shift_Input{
             delayMicroseconds(5);
             digitalWrite(loadPin, HIGH);
             for(int shiftRegIndex = 0; shiftRegIndex < numShiftRegisters; shiftRegIndex++){
-                rawInput[shiftRegIndex] = shiftIn(dataPin, clockPin, LSBFIRST);
+                rawInput[shiftRegIndex] = shiftIn(dataPin, clockPin, MSBFIRST);
                 
                 if(rawInput[shiftRegIndex] == debouncedInput[shiftRegIndex]){
                     prevInput[shiftRegIndex] = rawInput[shiftRegIndex];
