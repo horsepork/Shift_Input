@@ -57,10 +57,8 @@ class Shift_Input{
             digitalWrite(loadPin, HIGH);
             for(int shiftRegIndex = 0; shiftRegIndex < numShiftRegisters; shiftRegIndex++){
                 rawInput[shiftRegIndex] = shiftIn(dataPin, clockPin, LSBFIRST);
-                Serial.print(shiftRegIndex);
-                Serial.print(" -- ");
-                Serial.println(rawInput[shiftRegIndex], BIN);
-                if(rawInput[shiftRegIndex] = debouncedInput[shiftRegIndex]){
+                
+                if(rawInput[shiftRegIndex] == debouncedInput[shiftRegIndex]){
                     prevInput[shiftRegIndex] = rawInput[shiftRegIndex];
                     continue;
                 }
@@ -83,6 +81,9 @@ class Shift_Input{
                     }
                     
                     updated = true;
+                    Serial.print(shiftRegIndex);
+                    Serial.print(" -- ");
+                    Serial.println(processedInput[shiftRegIndex], BIN);
                 }
             }
             if(updated){
