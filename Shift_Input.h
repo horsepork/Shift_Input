@@ -60,6 +60,17 @@ class Shift_Input{
                 
                 if(rawInput[shiftRegIndex] == debouncedInput[shiftRegIndex]){
                     prevInput[shiftRegIndex] = rawInput[shiftRegIndex];
+                    processedInput[shiftRegIndex] = 0;
+                    for(int bitIndex = 0; bitIndex < 8; bitIndex++){
+                        uint8_t booleanBaseObjectIndex = bitIndex + shiftRegIndex * 8;
+                        if(booleanBaseObjectIndex >= numInputs){
+                            break;
+                        }
+                        booleanBaseObject[booleanBaseObjectIndex].setState(bitRead(debouncedInput[shiftRegIndex], bitIndex));
+                        if(booleanBaseObject[booleanBaseObjectIndex].read()){
+                            processedInput[shiftRegIndex] += power(2, bitIndex);
+                        }
+                    }
                     continue;
                 }
                 if(prevInput[shiftRegIndex] != rawInput[shiftRegIndex]){
